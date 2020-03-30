@@ -1,15 +1,23 @@
+name: CI Build Docker Image Demo
+
 on: [push]
 
 jobs:
-  hello_world_job:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image-namespace: [wataly]
+        image-name: [actions]
+        image-version: [hello]
     name: A job to say hello
     steps:
-    - name: Hello world action step
-      id: hello
-      uses: wataly/docker-actions@master
-      with:
-        who-to-greet: 'Mona the Octocat'
-    # 使用来自 `hello` 步骤的输出
-    - name: Get the output time
-      run: echo "The time was ${{ steps.hello.outputs.time }}"
+    - uses: actions/checkout@v1
+    - name: docker build and push to hub.docker.com
+      env:
+        docker_username: ${{ secrets.DOCKER_HUB_ID }}
+        docker_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      run: |
+        sudo docker login --username=${docker_username} --password=${docker_password}
+        sudo docker build -t ${{ matrix.image-namespace }}/${{ matrix.image-name }}:${{ matrix.image-version }} .
+        sudo docker push ${{ matrix.image-namespace }}/${{ matrix.image-name }}:${{ matrix.image-version }}
