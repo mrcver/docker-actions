@@ -7,7 +7,7 @@ jobs:
     steps:
     - name: Hello world action step
       id: hello
-      uses: wataly/docker-actions
+      uses: wataly/docker-actions@master
       with:
         who-to-greet: 'Mona the Octocat'
     # 使用来自 `hello` 步骤的输出
